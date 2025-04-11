@@ -28,34 +28,55 @@ export default function App() {
 
   function handleDragEnd(event) {
     const { active, over } = event;
-    if (!over) return;
+    if (!over || active.id === over.id) return;
 
-    // Moving columns
-    if (columns.some(col => col.id === active.id)) {
-      if (active.id !== over.id) {
-        const oldIndex = columns.findIndex(c => c.id === active.id);
-        const newIndex = columns.findIndex(c => c.id === over.id);
-        setColumns(arrayMove(columns, oldIndex, newIndex));
+    // Handle column movement
+    const activeColumnIndex = columns.findIndex(c => c.id === active.id);
+    if (activeColumnIndex !== -1) {
+      const overColumnIndex = columns.findIndex(c => c.id === over.id);
+      if (overColumnIndex !== -1) {
+        setColumns(arrayMove(columns, activeColumnIndex, overColumnIndex));
       }
       return;
     }
 
-    // Moving tasks
-    const taskId = active.id;
-    const newStatus = over.id;
+    // Handle task movement
+    const activeTask = tasks.find(t => t.id === active.id);
+    if (!activeTask) return;
 
-    setTasks((prev) =>
-      prev.map((task) =>
-        task.id === taskId
-          ? { ...task, status: newStatus }
-          : task
-      )
-    );
+    // Case 1: Dropping on another task
+    const overTask = tasks.find(t => t.id === over.id);
+    if (overTask) {
+      if (activeTask.status === overTask.status) {
+        // Move within same column
+        const columnTasks = tasks.filter(t => t.status === activeTask.status);
+        const oldIndex = columnTasks.findIndex(t => t.id === active.id);
+        const newIndex = columnTasks.findIndex(t => t.id === over.id);
+
+        setTasks(prev => [
+          ...prev.filter(t => t.status !== activeTask.status),
+          ...arrayMove(columnTasks, oldIndex, newIndex)
+        ]);
+      } else {
+        // Move to different column (position based on over task)
+        setTasks(prev => prev.map(t =>
+          t.id === active.id ? { ...t, status: overTask.status } : t
+        ));
+      }
+      return;
+    }
+
+    // Case 2: Dropping on a column
+    const overColumn = columns.find(c => c.id === over.id);
+    if (overColumn) {
+      setTasks(prev => prev.map(t =>
+        t.id === active.id ? { ...t, status: overColumn.id } : t
+      ));
+    }
   }
-
   return (
     <div className="p-4">
-      <DndContext onDragEnd={handleDragEnd}>
+      <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <SortableContext items={columns.map(c => c.id)} strategy={rectSortingStrategy}>
           <div className="flex gap-8">
             {columns.map((column) => (
@@ -72,7 +93,6 @@ export default function App() {
   );
 }
 
-// Sortable Column Wrapper
 function SortableColumn({ column, tasks }) {
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
     id: column.id,
