@@ -28,7 +28,7 @@ const AddProject = ({ onClose }) => {
       title: data.title,
       description: data.description,
       coverImage: data.coverImage || '', 
-      tasks: [],
+      columnOrder:[]
     };
 
     dispatch(addProjectAction(newProject));

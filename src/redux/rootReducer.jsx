@@ -1,12 +1,14 @@
 import { combineReducers } from 'redux';
 import authSlice from './slice/auth.slice';
 import projectSlice from './slice/project.slice';
-import projectTasksReducer from './slice/projectTask.slice';
+import columnSlice from './slice/column.slice';
+import taskSlice from './slice/task.slice';
 
 const rootReducer = combineReducers({
   auth: authSlice,
   projects: projectSlice,
-  projectTasks: projectTasksReducer,
+  columns: columnSlice,
+  tasks: taskSlice,
 });
 
 export default rootReducer;

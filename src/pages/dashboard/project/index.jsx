@@ -1,182 +1,174 @@
-import React, { useState } from "react";
+import { closestCenter, DndContext } from '@dnd-kit/core';
 import {
-  DndContext,
-  DragOverlay,
-  closestCorners,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors
-} from "@dnd-kit/core";
-import { arrayMove, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
+  arrayMove,
+  rectSortingStrategy,
+  SortableContext
+} from '@dnd-kit/sortable';
+import { SortableColumn } from './Column';
+import { useParams } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { addColumnAction, reorderTasks } from '../../../redux/slice/column.slice';
+import { addTask, moveTask } from '../../../redux/slice/task.slice';
+import { v4 as uuidv4 } from 'uuid';
+import { reorderColumns } from '../../../redux/slice/project.slice';
 
-import Container from "./container";
-import { Item } from "./sortable_item";
+export default function Board() {
+  const dispatch = useDispatch();
+  const { id: projectId } = useParams();
 
-const wrapperStyle = {
-  display: "flex",
-  flexDirection: "row"
-};
+  // Get project
+  const projectList = useSelector((state) => state.projects.list);
+  const projectObject = projectList.find((project) => project.id === projectId);
 
-const defaultAnnouncements = {
-  onDragStart(id) {
-    console.log(`Picked up draggable item ${id}.`);
-  },
-  onDragOver(id, overId) {
-    if (overId) {
-      console.log(
-        `Draggable item ${id} was moved over droppable area ${overId}.`
-      );
-      return;
-    }
+  // Get all columns related to the project
+  const columnsList = useSelector((state) => state.columns.list);
+  const filterColumnsList = columnsList.filter((col) => col.projectId === projectId);
+  
+  // Order columns by taskOrder array from the project
+  const orderedColumns = projectObject?.columnOrder
+    ?.map((columnId) => filterColumnsList.find((col) => col.id === columnId))
+    .filter(Boolean) || [];
 
-    console.log(`Draggable item ${id} is no longer over a droppable area.`);
-  },
-  onDragEnd(id, overId) {
-    if (overId) {
-      console.log(
-        `Draggable item ${id} was dropped over droppable area ${overId}`
-      );
-      return;
-    }
-
-    console.log(`Draggable item ${id} was dropped.`);
-  },
-  onDragCancel(id) {
-    console.log(`Dragging was cancelled. Draggable item ${id} was dropped.`);
-  }
-};
-
-export default function Project() {
-  const [items, setItems] = useState({
-    root: ["1", "2", "3"],
-    container1: ["4", "5", "6"],
-    container2: ["7", "8", "9"],
-    container3: []
-  });
-  const [activeId, setActiveId] = useState();
-
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates
-    })
+  // Get all tasks related to project columns
+  const tasksList = useSelector((state) => state.tasks.list);
+  const projectTasks = tasksList.filter((task) =>
+    filterColumnsList.some((col) => col.id === task.columnId)
   );
 
+  const handleAddNewColumn = (columnTitle) => {
+    const newColumn = {
+      id: uuidv4(),
+      projectId,
+      title: columnTitle,
+      taskIds: []
+    };
+
+    dispatch(addColumnAction(newColumn));
+
+    const newColumnOrder = [...(projectObject?.columnOrder || []), newColumn.id];
+    dispatch(
+      reorderColumns({
+        projectId,
+        columnOrder: newColumnOrder
+      })
+    );
+  };
+
+  const handleDragEnd = (event) => {
+    const { active, over } = event;
+    if (!over) return;
+
+    const activeId = active.id;
+    const overId = over.id;
+
+    // Reorder columns
+    if (filterColumnsList.some(col => col.id === activeId)) {
+      const oldIndex = orderedColumns.findIndex(c => c.id === activeId);
+      const newIndex = orderedColumns.findIndex(c => c.id === overId);
+      if (oldIndex !== newIndex) {
+        const newOrder = arrayMove(orderedColumns, oldIndex, newIndex).map(col => col.id);
+        dispatch(reorderColumns({ projectId, columnOrder: newOrder }));
+      }
+      return;
+    }
+
+    // Find source and destination columns
+    const sourceColumn = filterColumnsList.find(col => 
+      col.taskIds.includes(activeId)
+    );
+    const destinationColumn = filterColumnsList.find(col => 
+      col.id === over.data.current?.columnId || col.id === sourceColumn?.id
+    );
+
+    if (!sourceColumn || !destinationColumn) return;
+
+    // Moving within the same column
+    if (sourceColumn.id === destinationColumn.id) {
+      const oldIndex = sourceColumn.taskIds.indexOf(activeId);
+      const newIndex = destinationColumn.taskIds.indexOf(overId);
+      
+      if (oldIndex !== newIndex) {
+        const newTaskIds = arrayMove(
+          sourceColumn.taskIds,
+          oldIndex,
+          newIndex
+        );
+        dispatch(reorderTasks({
+          columnId: sourceColumn.id,
+          taskIds: newTaskIds
+        }));
+      }
+    } 
+    // Moving to different column
+    else {
+      // Remove from source column
+      const sourceTaskIds = sourceColumn.taskIds.filter(id => id !== activeId);
+      dispatch(reorderTasks({
+        columnId: sourceColumn.id,
+        taskIds: sourceTaskIds
+      }));
+
+      // Add to destination column
+      const destinationIndex = destinationColumn.taskIds.indexOf(overId);
+      const newDestinationTaskIds = [...destinationColumn.taskIds];
+      newDestinationTaskIds.splice(destinationIndex, 0, activeId);
+      
+      dispatch(reorderTasks({
+        columnId: destinationColumn.id,
+        taskIds: newDestinationTaskIds
+      }));
+
+      // Update task's column reference
+      dispatch(moveTask({
+        taskId: activeId,
+        columnId: destinationColumn.id
+      }));
+    }
+  };
+
+  const handleAddNewTask = (columnId, title, description = '') => {
+    const newTask = {
+      id: uuidv4(),
+      columnId,
+      title,
+      description,
+    };
+    dispatch(addTask(newTask));
+    
+    // Update the column's task order
+    const column = filterColumnsList.find(col => col.id === columnId);
+    if (column) {
+      dispatch(reorderTasks({
+        columnId,
+        taskIds: [...column.taskIds, newTask.id]
+      }));
+    }
+  };
+
   return (
-    <div style={wrapperStyle}>
-      <DndContext
-        announcements={defaultAnnouncements}
-        sensors={sensors}
-        collisionDetection={closestCorners}
-        onDragStart={handleDragStart}
-        onDragOver={handleDragOver}
-        onDragEnd={handleDragEnd}
+    <div className="p-4">
+      <button
+        onClick={() => handleAddNewColumn('New Column')}
+        className="px-4 py-2 bg-blue-600 text-white rounded"
       >
-        <Container id="root" items={items.root} />
-        <Container id="container1" items={items.container1} />
-        <Container id="container2" items={items.container2} />
-        <Container id="container3" items={items.container3} />
-        <DragOverlay>{activeId ? <Item id={activeId} /> : null}</DragOverlay>
+        Add Column
+      </button>
+      <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+        <SortableContext items={orderedColumns.map(col => col.id)} strategy={rectSortingStrategy}>
+          <div className="flex gap-8 mt-4">
+            {orderedColumns.map((column) => (
+              <SortableColumn
+                key={column.id}
+                column={column}
+                tasks={column.taskIds
+                  .map(taskId => projectTasks.find(task => task.id === taskId))
+                  .filter(Boolean)}
+                onAddTask={handleAddNewTask}
+              />
+            ))}
+          </div>
+        </SortableContext>
       </DndContext>
     </div>
   );
-
-  function findContainer(id) {
-    if (id in items) {
-      return id;
-    }
-
-    return Object.keys(items).find((key) => items[key].includes(id));
-  }
-
-  function handleDragStart(event) {
-    const { active } = event;
-    const { id } = active;
-
-    setActiveId(id);
-  }
-
-  function handleDragOver(event) {
-    const { active, over, draggingRect } = event;
-    const { id } = active;
-    const { id: overId } = over;
-
-    // Find the containers
-    const activeContainer = findContainer(id);
-    const overContainer = findContainer(overId);
-
-    if (
-      !activeContainer ||
-      !overContainer ||
-      activeContainer === overContainer
-    ) {
-      return;
-    }
-
-    setItems((prev) => {
-      const activeItems = prev[activeContainer];
-      const overItems = prev[overContainer];
-
-      // Find the indexes for the items
-      const activeIndex = activeItems.indexOf(id);
-      const overIndex = overItems.indexOf(overId);
-
-      let newIndex;
-      if (overId in prev) {
-        // We're at the root droppable of a container
-        newIndex = overItems.length + 1;
-      } else {
-        const isBelowLastItem =
-          over &&
-          overIndex === overItems.length - 1 &&
-          draggingRect?.offsetTop > over?.rect?.offsetTop + over?.rect?.height;
-
-        const modifier = isBelowLastItem ? 1 : 0;
-
-        newIndex = overIndex >= 0 ? overIndex + modifier : overItems.length + 1;
-      }
-
-      return {
-        ...prev,
-        [activeContainer]: [
-          ...prev[activeContainer].filter((item) => item !== active.id)
-        ],
-        [overContainer]: [
-          ...prev[overContainer].slice(0, newIndex),
-          items[activeContainer][activeIndex],
-          ...prev[overContainer].slice(newIndex, prev[overContainer].length)
-        ]
-      };
-    });
-  }
-
-  function handleDragEnd(event) {
-    const { active, over } = event;
-    const { id } = active;
-    const { id: overId } = over;
-
-    const activeContainer = findContainer(id);
-    const overContainer = findContainer(overId);
-
-    if (
-      !activeContainer ||
-      !overContainer ||
-      activeContainer !== overContainer
-    ) {
-      return;
-    }
-
-    const activeIndex = items[activeContainer].indexOf(active.id);
-    const overIndex = items[overContainer].indexOf(overId);
-
-    if (activeIndex !== overIndex) {
-      setItems((items) => ({
-        ...items,
-        [overContainer]: arrayMove(items[overContainer], activeIndex, overIndex)
-      }));
-    }
-
-    setActiveId(null);
-  }
 }
