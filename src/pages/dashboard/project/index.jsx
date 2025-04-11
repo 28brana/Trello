@@ -1,4 +1,4 @@
-import { DndContext, closestCenter } from '@dnd-kit/core';
+import { DndContext, DragOverlay, closestCenter } from '@dnd-kit/core';
 import {
   arrayMove,
   SortableContext,
@@ -8,6 +8,7 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import { useState } from 'react';
 import { Column } from './Column';
+import { TaskCard } from './TaskCard';
 
 const INITIAL_COLUMNS = [
   { id: 'TODO', title: 'To Do' },
@@ -25,7 +26,13 @@ const INITIAL_TASKS = [
 export default function App() {
   const [columns, setColumns] = useState(INITIAL_COLUMNS);
   const [tasks, setTasks] = useState(INITIAL_TASKS);
+  const [activeId, setActiveId] = useState(null);
 
+  const activeTask = tasks.find(task => task.id === activeId);
+
+  function handleDragStart(event) {
+    setActiveId(event.active.id);
+  }
   function handleDragEnd(event) {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
@@ -76,36 +83,43 @@ export default function App() {
   }
   return (
     <div className="p-4">
-      <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-        <SortableContext items={columns.map(c => c.id)} strategy={rectSortingStrategy}>
-          <div className="flex gap-8">
-            {columns.map((column) => (
-              <SortableColumn
-                key={column.id}
-                column={column}
-                tasks={tasks.filter((task) => task.status === column.id)}
-              />
-            ))}
-          </div>
-        </SortableContext>
+      <DndContext
+        collisionDetection={closestCenter}
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
+      >
+        {/* <SortableContext items={columns.map(c => c.id)} strategy={rectSortingStrategy}> */}
+        <div className="flex gap-8">
+          {columns.map((column) => (
+            <Column
+              key={column.id}
+              column={column}
+              tasks={tasks.filter((task) => task.status === column.id)}
+            />
+          ))}
+        </div>
+        {/* </SortableContext> */}
+        <DragOverlay>
+          {activeTask ? <TaskCard task={activeTask} blur={true} /> : null}
+        </DragOverlay>
       </DndContext>
     </div>
   );
 }
 
-function SortableColumn({ column, tasks }) {
-  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
-    id: column.id,
-  });
+// function SortableColumn({ column, tasks }) {
+//   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
+//     id: column.id,
+//   });
 
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-  };
+//   const style = {
+//     transform: CSS.Transform.toString(transform),
+//     transition,
+//   };
 
-  return (
-    <div ref={setNodeRef} {...attributes} {...listeners} style={style}>
-      <Column column={column} tasks={tasks} />
-    </div>
-  );
-}
+//   return (
+//     <div ref={setNodeRef} {...attributes} {...listeners} style={style}>
+//       <Column column={column} tasks={tasks} />
+//     </div>
+//   );
+// }
