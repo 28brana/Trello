@@ -1,15 +1,12 @@
-import { DndContext, DragOverlay, closestCenter } from '@dnd-kit/core';
+import { closestCenter, DndContext, DragOverlay, MouseSensor, PointerSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core';
 import {
-  arrayMove,
-  SortableContext,
-  useSortable,
-  rectSortingStrategy,
+  arrayMove
 } from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
 import { useState } from 'react';
+import AddColumn from './AddColumn';
 import { Column } from './Column';
 import { TaskCard } from './TaskCard';
-import AddColumn from './AddColumn';
+import { v4 as uuidv4 } from 'uuid';
 
 const INITIAL_COLUMNS = [
   { id: 'TODO', title: 'To Do' },
@@ -79,13 +76,46 @@ export default function App() {
   }
 
   function handleAddColumn(title) {
-    const id = title.toUpperCase().replace(/\s+/g, '_') + '_' + Date.now();
+    const id = uuidv4();
     setColumns(prev => [...prev, { id, title }]);
   }
 
+  function handleAddTask(columnId, title, description) {
+    const newTask = {
+      id: uuidv4(),
+      title,
+      description,
+      status: columnId
+    };
+    setTasks(prev => [...prev, newTask]);
+  }
+
+  function handleUpdateTask(taskId, updatedFields) {
+    setTasks((prev) =>
+      prev.map((task) =>
+        task.id === taskId ? { ...task, ...updatedFields } : task
+      )
+    );
+  }
+
+  const mouseSensor = useSensor(MouseSensor, {
+    activationConstraint: {
+      distance: 5, // drag only starts after moving 5px
+    },
+  });
+  
+  const touchSensor = useSensor(TouchSensor, {
+    activationConstraint: {
+      delay: 150,
+      tolerance: 5,
+    },
+  });
+  
+  const sensors = useSensors(mouseSensor, touchSensor);
   return (
     <div className="p-4">
       <DndContext
+        sensors={sensors}
         collisionDetection={closestCenter}
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
@@ -96,6 +126,8 @@ export default function App() {
               key={column.id}
               column={column}
               tasks={tasks.filter((task) => task.status === column.id)}
+              onAddTask={handleAddTask}
+              onUpdate={handleUpdateTask}
             />
           ))}
           <AddColumn onAdd={handleAddColumn} />
