@@ -9,6 +9,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { useState } from 'react';
 import { Column } from './Column';
 import { TaskCard } from './TaskCard';
+import AddColumn from './AddColumn';
 
 const INITIAL_COLUMNS = [
   { id: 'TODO', title: 'To Do' },
@@ -33,11 +34,11 @@ export default function App() {
   function handleDragStart(event) {
     setActiveId(event.active.id);
   }
+
   function handleDragEnd(event) {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
 
-    // Handle column movement
     const activeColumnIndex = columns.findIndex(c => c.id === active.id);
     if (activeColumnIndex !== -1) {
       const overColumnIndex = columns.findIndex(c => c.id === over.id);
@@ -47,15 +48,12 @@ export default function App() {
       return;
     }
 
-    // Handle task movement
     const activeTask = tasks.find(t => t.id === active.id);
     if (!activeTask) return;
 
-    // Case 1: Dropping on another task
     const overTask = tasks.find(t => t.id === over.id);
     if (overTask) {
       if (activeTask.status === overTask.status) {
-        // Move within same column
         const columnTasks = tasks.filter(t => t.status === activeTask.status);
         const oldIndex = columnTasks.findIndex(t => t.id === active.id);
         const newIndex = columnTasks.findIndex(t => t.id === over.id);
@@ -65,7 +63,6 @@ export default function App() {
           ...arrayMove(columnTasks, oldIndex, newIndex)
         ]);
       } else {
-        // Move to different column (position based on over task)
         setTasks(prev => prev.map(t =>
           t.id === active.id ? { ...t, status: overTask.status } : t
         ));
@@ -73,7 +70,6 @@ export default function App() {
       return;
     }
 
-    // Case 2: Dropping on a column
     const overColumn = columns.find(c => c.id === over.id);
     if (overColumn) {
       setTasks(prev => prev.map(t =>
@@ -81,6 +77,12 @@ export default function App() {
       ));
     }
   }
+
+  function handleAddColumn(title) {
+    const id = title.toUpperCase().replace(/\s+/g, '_') + '_' + Date.now();
+    setColumns(prev => [...prev, { id, title }]);
+  }
+
   return (
     <div className="p-4">
       <DndContext
@@ -88,7 +90,6 @@ export default function App() {
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
       >
-        {/* <SortableContext items={columns.map(c => c.id)} strategy={rectSortingStrategy}> */}
         <div className="flex gap-8">
           {columns.map((column) => (
             <Column
@@ -97,8 +98,9 @@ export default function App() {
               tasks={tasks.filter((task) => task.status === column.id)}
             />
           ))}
+          <AddColumn onAdd={handleAddColumn} />
         </div>
-        {/* </SortableContext> */}
+
         <DragOverlay>
           {activeTask ? <TaskCard task={activeTask} blur={true} /> : null}
         </DragOverlay>
@@ -107,19 +109,4 @@ export default function App() {
   );
 }
 
-// function SortableColumn({ column, tasks }) {
-//   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
-//     id: column.id,
-//   });
 
-//   const style = {
-//     transform: CSS.Transform.toString(transform),
-//     transition,
-//   };
-
-//   return (
-//     <div ref={setNodeRef} {...attributes} {...listeners} style={style}>
-//       <Column column={column} tasks={tasks} />
-//     </div>
-//   );
-// }
