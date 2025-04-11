@@ -12,7 +12,9 @@ import { registerAction } from '../../redux/slice/auth.slice.jsx';
 const schema = Yup.object().shape({
   username: Yup.string().required('Username is required'),
   email: Yup.string().email('Invalid email').required('Email is required'),
-  password: Yup.string().min(6).required('Password is required'),
+  password: Yup.string()
+  .required('Password is required')
+  .min(6, 'Password must be at least 6 characters'),
 });
 
 const Register = () => {
@@ -61,6 +63,7 @@ const Register = () => {
 
         <button
           type="submit"
+          data-cy="register-button"
           className="w-full cursor-pointer bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
         >
           Register

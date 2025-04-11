@@ -8,6 +8,7 @@ const InputField = ({ label, register, name, type = 'text', placeholder, error }
       placeholder={placeholder}
       {...register(name)}
       className="input"
+      data-cy={name}
     />
     {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
   </div>
