@@ -22,79 +22,78 @@ const persistedRoot = {
   }),
   _persist: JSON.stringify({ version: -1, rehydrated: true }),
 };
-// describe('User Registration and Login Flow', () => {
-//   //  Registration Tests
-//   describe('Registration Form', () => {
-//     beforeEach(() => {
-//       cy.visit('/auth/register');
-//     });
+describe('User Registration and Login Flow', () => {
+  //  Registration Tests
+  describe('Registration Form', () => {
+    beforeEach(() => {
+      cy.visit('/auth/register');
+    });
 
-//     it('shows validation errors for empty fields', () => {
-//       cy.get('[data-cy=register-button]').click();
-//       cy.contains('Username is required').should('be.visible');
-//       cy.contains('Email is required').should('be.visible');
-//       cy.contains('Password is required').should('be.visible');
-//     });
+    it('shows validation errors for empty fields', () => {
+      cy.get('[data-cy=register-button]').click();
+      cy.contains('Username is required').should('be.visible');
+      cy.contains('Email is required').should('be.visible');
+      cy.contains('Password is required').should('be.visible');
+    });
 
-//     it('shows validation error for invalid email', () => {
-//       cy.get('input[name="username"]').type('testuser');
-//       cy.get('input[name="email"]').type('invalidemail');
-//       cy.get('input[name="password"]').type('123456');
-//       cy.get('[data-cy=register-button]').click();
-//       cy.contains('Invalid email').should('be.visible');
-//     });
+    it('shows validation error for invalid email', () => {
+      cy.get('input[name="username"]').type('testuser');
+      cy.get('input[name="email"]').type('invalidemail');
+      cy.get('input[name="password"]').type('123456');
+      cy.get('[data-cy=register-button]').click();
+      cy.contains('Invalid email').should('be.visible');
+    });
 
-//     it('shows validation error for short password', () => {
-//       cy.get('input[name="username"]').type('testuser');
-//       cy.get('input[name="email"]').type('user@example.com');
-//       cy.get('input[name="password"]').type('123');
-//       cy.get('[data-cy=register-button]').click();
-//       cy.contains('Password must be at least 6 characters').should('be.visible');
-//     });
+    it('shows validation error for short password', () => {
+      cy.get('input[name="username"]').type('testuser');
+      cy.get('input[name="email"]').type('user@example.com');
+      cy.get('input[name="password"]').type('123');
+      cy.get('[data-cy=register-button]').click();
+      cy.contains('Password must be at least 6 characters').should('be.visible');
+    });
 
-//     it('navigates to dashboard on valid submission', () => {
-//       cy.get('input[name="username"]').clear().type('john');
-//       cy.get('input[name="email"]').clear().type('john@example.com');
-//       cy.get('input[name="password"]').clear().type('password123');
-//       cy.get('[data-cy=register-button]').click();
-//       cy.location('pathname').should('eq', '/');
-//     });
-//   });
+    it('navigates to dashboard on valid submission', () => {
+      cy.get('input[name="username"]').clear().type('john');
+      cy.get('input[name="email"]').clear().type('john@example.com');
+      cy.get('input[name="password"]').clear().type('password123');
+      cy.get('[data-cy=register-button]').click();
+      cy.location('pathname').should('eq', '/');
+    });
+  });
 
-//   //  Login Tests
-//   describe('Login Form', () => {
-//     beforeEach(() => {
-//       cy.visit('/auth/login');
-//     });
+  //  Login Tests
+  describe('Login Form', () => {
+    beforeEach(() => {
+      cy.visit('/auth/login');
+    });
 
-//     it('shows validation errors for empty fields', () => {
-//       cy.get('[data-cy=login-button]').click();
-//       cy.contains('Email is required').should('be.visible');
-//       cy.contains('Password is required').should('be.visible');
-//     });
+    it('shows validation errors for empty fields', () => {
+      cy.get('[data-cy=login-button]').click();
+      cy.contains('Email is required').should('be.visible');
+      cy.contains('Password is required').should('be.visible');
+    });
 
-//     it('logs in successfully with valid credentials', () => {
-//       window.localStorage.setItem('persist:root', JSON.stringify(persistedRoot));
-//       cy.get('input[name="email"]').type('28brana@gmail.com');
-//       cy.get('input[name="password"]').type('12345678');
-//       cy.get('[data-cy=login-button]').click();
-//     });
-//   });
+    it('logs in successfully with valid credentials', () => {
+      window.localStorage.setItem('persist:root', JSON.stringify(persistedRoot));
+      cy.get('input[name="email"]').type('28brana@gmail.com');
+      cy.get('input[name="password"]').type('12345678');
+      cy.get('[data-cy=login-button]').click();
+    });
+  });
 
-//   //  Logout Tests
-//   describe('Logout Flow with Redux Persist', () => {
-//     beforeEach(() => {
-//       window.localStorage.setItem('persist:root', JSON.stringify(persistedRoot));
-//       cy.visit('/');
-//     });
+  //  Logout Tests
+  describe('Logout Flow with Redux Persist', () => {
+    beforeEach(() => {
+      window.localStorage.setItem('persist:root', JSON.stringify(persistedRoot));
+      cy.visit('/');
+    });
 
-//     it('navigates to login on logout', () => {
-//       cy.get('[data-cy=logout-button]').click();
-//       cy.location('pathname').should('eq', '/auth/login');
-//     });
-//   });
-// });
-
+    it('navigates to login on logout', () => {
+      cy.get('[data-cy=logout-button]').click();
+      cy.location('pathname').should('eq', '/auth/login');
+    });
+  });
+});
 
 describe('Project creation flow and task flow', () => {
   describe('Flow to test project creation', () => {
@@ -181,20 +180,37 @@ describe('Project creation flow and task flow', () => {
     });
   })
 
-
-  describe('Flow to test task creation,updation & column creation', () => {
-    beforeEach(() => {
-      window.localStorage.setItem('persist:root', JSON.stringify(persistedRoot));
-      cy.visit('/');
-    });
-
-    const projectUrl = '/project/0a5e4fd8-d21c-4993-a4d9-74e5b9e1b3ad';
-
-    it('Drag & Drop Test', () => {
-      cy.visit(projectUrl);
-
-      
-    });
-
-  })
 });
+
+describe('Task Drag and Drop Test', () => {
+  beforeEach(() => {
+    window.localStorage.setItem('persist:root', JSON.stringify(persistedRoot));
+
+    cy.visit('/project/0a5e4fd8-d21c-4993-a4d9-74e5b9e1b3ad');
+  });
+
+  it('should drag task from To Do to Done column with realistic movement', () => {
+    const taskId = 'task-card-1';
+    const sourceColumn = 'column-TODO';
+    const targetColumn = 'column-DONE';
+
+    cy.get(`[data-cy="${sourceColumn}"] [data-cy="${taskId}"]`).as('task');
+    cy.get(`[data-cy="${targetColumn}"]`).as('target');
+
+    cy.get('@task').should('exist');
+    cy.get('@target').should('not.contain', taskId);
+
+    cy.get('@task').drag('@target', {
+      source: { x: 100, y: 100 },
+      target: { position: 'center' },
+      force: true,
+    });
+
+    // cy.get('@target').trigger('mouseup', { force: true })
+
+    cy.get(`[data-cy="${sourceColumn}"]`).should('not.contain', taskId);
+    cy.get(`[data-cy="${targetColumn}"] [data-cy="${taskId}"]`).should('exist');
+  });
+});
+
+
