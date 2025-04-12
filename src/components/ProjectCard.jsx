@@ -14,12 +14,13 @@ const getRandomGradient = () => {
   return colors[randomIndex];
 };
 
-const ProjectCard = ({ project }) => {
+const ProjectCard = ({ project, index }) => {
   const navigate = useNavigate();
   const gradient = getRandomGradient(); // Get a random gradient
 
   return (
     <div
+      data-cy={`project-card-${index}`}
       className="border border-gray-700 rounded-xl p-4 shadow-md cursor-pointer hover:scale-105 transition-transform bg-gray-800 hover:shadow-xl"
       onClick={() => navigate(`/project/${project.id}`)}
       aria-label={`View project: ${project.title}`}

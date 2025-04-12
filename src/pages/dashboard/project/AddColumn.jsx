@@ -17,6 +17,7 @@ export default function AddColumn({ onAdd }) {
             {showInput ? (
                 <div className="flex flex-col gap-2">
                     <input
+                        data-cy='column-input'
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
                         placeholder="Column title"
@@ -24,6 +25,7 @@ export default function AddColumn({ onAdd }) {
                     />
                     <div className="flex gap-2">
                         <button
+                            data-cy="add-column-button"
                             onClick={handleSubmit}
                             className="bg-blue-500 hover:bg-blue-600 flex-1 text-white px-2 py-1 rounded text-sm"
                         >
@@ -40,6 +42,7 @@ export default function AddColumn({ onAdd }) {
             ) : (
                 <button
                     onClick={() => setShowInput(true)}
+                    data-cy='open-add-column'
                     className="text-white w-full bg-neutral-600 px-3 py-2 rounded hover:bg-neutral-500"
                 >
                     + Add Column

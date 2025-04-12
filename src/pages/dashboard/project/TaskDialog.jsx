@@ -19,6 +19,7 @@ export function TaskDialog({ task, onClose, onUpdate }) {
         <label className="text-sm text-neutral-400">Title</label>
         <input
           value={title}
+          data-cy='title'
           onChange={(e) => setTitle(e.target.value)}
           className="mb-3 w-full rounded bg-neutral-700 px-3 py-2 text-sm text-white focus:outline-none"
         />
@@ -26,6 +27,7 @@ export function TaskDialog({ task, onClose, onUpdate }) {
         <label className="text-sm text-neutral-400">Description</label>
         <textarea
           value={description}
+          data-cy='description'
           onChange={(e) => setDescription(e.target.value)}
           rows={4}
           className="mb-3 w-full rounded bg-neutral-700 px-3 py-2 text-sm text-white focus:outline-none"
@@ -34,6 +36,7 @@ export function TaskDialog({ task, onClose, onUpdate }) {
         <label className="text-sm text-neutral-400">Assign to</label>
         <select
           value={assignedTo}
+          data-cy='assignedTo'
           onChange={(e) => setAssignedTo(e.target.value)}
           className="mb-3 w-full rounded bg-neutral-700 px-3 py-2 text-sm text-white"
         >
@@ -46,6 +49,7 @@ export function TaskDialog({ task, onClose, onUpdate }) {
         <label className="text-sm text-neutral-400">Due Date</label>
         <input
           type="date"
+          data-cy='date'
           value={dueDate}
           onChange={(e) => setDueDate(e.target.value)}
           className="mb-4 w-full rounded bg-neutral-700 px-3 py-2 text-sm text-white focus:outline-none"
@@ -59,6 +63,7 @@ export function TaskDialog({ task, onClose, onUpdate }) {
             Cancel
           </button>
           <button
+            data-cy='update-submit-button'
             onClick={handleSave}
             className="rounded bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-500"
           >

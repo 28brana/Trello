@@ -25,13 +25,13 @@ const Dashboard = () => {
             className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
           >
             <Plus size={20} weight="bold" />
-            <span className="text-sm font-medium">Add Project</span>
+            <span data-cy='add-project-button' className="text-sm font-medium">Add Project</span>
           </button>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-          {paginated.map((project) => (
-            <ProjectCard key={project.id} project={project} />
+          {paginated.map((project, index) => (
+            <ProjectCard key={project.id} project={project} index={index} />
           ))}
         </div>
 

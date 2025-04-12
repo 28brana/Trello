@@ -74,6 +74,7 @@ const AddProject = ({ onClose }) => {
             </button>
             <button
               type="submit"
+              data-cy="add-project-submit"
               className="px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 text-sm"
             >
               Add Project

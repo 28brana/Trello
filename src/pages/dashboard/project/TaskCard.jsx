@@ -3,7 +3,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { useState } from 'react';
 import { TaskDialog } from './TaskDialog';
 
-export function TaskCard({ task, blur = false, onUpdate }) {
+export function TaskCard({ task, blur = false, onUpdate, index }) {
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
     id: task.id,
   });
@@ -28,6 +28,7 @@ export function TaskCard({ task, blur = false, onUpdate }) {
   return (
     <>
       <div
+        data-cy={`task-card-${task.id}`}
         ref={setNodeRef}
         {...attributes}
         {...listeners}

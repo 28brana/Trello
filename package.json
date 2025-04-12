@@ -29,6 +29,7 @@
     "yup": "^1.6.1"
   },
   "devDependencies": {
+    "@4tw/cypress-drag-drop": "^2.3.0",
     "@eslint/js": "^9.21.0",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
