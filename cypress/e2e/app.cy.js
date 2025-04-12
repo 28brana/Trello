@@ -122,7 +122,7 @@ describe('Project creation flow and task CURD operation', () => {
 
   })
 
-  describe('Flow to test project creation', () => {
+  describe('Flow to test task creation,updation & column creation', () => {
     beforeEach(() => {
       window.localStorage.setItem('persist:root', JSON.stringify(persistedRoot));
       cy.visit('/');
