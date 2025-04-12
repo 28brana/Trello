@@ -96,7 +96,7 @@ const persistedRoot = {
 // });
 
 
-describe('Project creation flow and task CURD operation', () => {
+describe('Project creation flow and task flow', () => {
   describe('Flow to test project creation', () => {
     beforeEach(() => {
       window.localStorage.setItem('persist:root', JSON.stringify(persistedRoot));
@@ -181,4 +181,20 @@ describe('Project creation flow and task CURD operation', () => {
     });
   })
 
+
+  describe('Flow to test task creation,updation & column creation', () => {
+    beforeEach(() => {
+      window.localStorage.setItem('persist:root', JSON.stringify(persistedRoot));
+      cy.visit('/');
+    });
+
+    const projectUrl = '/project/0a5e4fd8-d21c-4993-a4d9-74e5b9e1b3ad';
+
+    it('Drag & Drop Test', () => {
+      cy.visit(projectUrl);
+
+      
+    });
+
+  })
 });
