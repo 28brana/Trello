@@ -7,6 +7,7 @@ import AddColumn from './AddColumn';
 import { Column } from './Column';
 import { TaskCard } from './TaskCard';
 import { v4 as uuidv4 } from 'uuid';
+import MainLayout from '../../../layout';
 
 const INITIAL_COLUMNS = [
   { id: 'TODO', title: 'To Do' },
@@ -103,41 +104,43 @@ export default function App() {
       distance: 5, // drag only starts after moving 5px
     },
   });
-  
+
   const touchSensor = useSensor(TouchSensor, {
     activationConstraint: {
       delay: 150,
       tolerance: 5,
     },
   });
-  
+
   const sensors = useSensors(mouseSensor, touchSensor);
   return (
-    <div className="p-4">
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        onDragStart={handleDragStart}
-        onDragEnd={handleDragEnd}
-      >
-        <div className="flex gap-8">
-          {columns.map((column) => (
-            <Column
-              key={column.id}
-              column={column}
-              tasks={tasks.filter((task) => task.status === column.id)}
-              onAddTask={handleAddTask}
-              onUpdate={handleUpdateTask}
-            />
-          ))}
-          <AddColumn onAdd={handleAddColumn} />
-        </div>
+    <MainLayout>
+      <div className="p-4 overflow-auto min-h-[85vh] dark-scrollbar">
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
+        >
+          <div className="flex gap-8">
+            {columns.map((column) => (
+              <Column
+                key={column.id}
+                column={column}
+                tasks={tasks.filter((task) => task.status === column.id)}
+                onAddTask={handleAddTask}
+                onUpdate={handleUpdateTask}
+              />
+            ))}
+            <AddColumn onAdd={handleAddColumn} />
+          </div>
 
-        <DragOverlay>
-          {activeTask ? <TaskCard task={activeTask} blur={true} /> : null}
-        </DragOverlay>
-      </DndContext>
-    </div>
+          <DragOverlay>
+            {activeTask ? <TaskCard task={activeTask} blur={true} /> : null}
+          </DragOverlay>
+        </DndContext>
+      </div>
+    </MainLayout>
   );
 }
 

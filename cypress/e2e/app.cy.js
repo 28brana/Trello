@@ -3,6 +3,7 @@ describe('User Registration', () => {
     cy.visit('/auth/register');
   });
 
+  // 1. Register form
   it('shows validation errors for empty fields', () => {
     cy.get('[data-cy=register-button]').click();
     cy.contains('Username is required').should('be.visible');
@@ -35,4 +36,6 @@ describe('User Registration', () => {
 
     cy.location('pathname').should('eq', '/dashboard');
   });
+
+  // 2. Logout
 });

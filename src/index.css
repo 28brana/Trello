@@ -5,9 +5,15 @@ html{
 }
 
 .input {
-    @apply w-full p-2 border rounded border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 placeholder:text-sm;
+    @apply w-full px-3 py-2 rounded-md bg-[#2C333A] border border-[#3E4650] text-white placeholder-gray-400 pr-10 focus:outline-none focus:ring-2 focus:ring-[#579DFF];
 }
 
 button{
     @apply cursor-pointer;
 }
+
+.dark-scrollbar {
+    scrollbar-color: #8b8b8b #374151;
+    scrollbar-width: thin; 
+}
+

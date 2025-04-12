@@ -6,6 +6,8 @@ import Register from './pages/auth/register';
 import Dashboard from './pages/dashboard';
 import Board from './pages/dashboard/project';
 import { store } from './redux/store';
+import AuthGuard from './guard/AuthGuard';
+import { ToastContainer } from 'react-toastify';
 
 // Flow will look like this 
 // Project(Board) -> Columns -> Tasks
@@ -18,11 +20,12 @@ const AllRoutes = () => {
           <Routes>
             <Route path="/auth/login" element={<Login />} />
             <Route path="/auth/register" element={<Register />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/project/:id" element={<Board />} />
+            <Route path="/" element={<AuthGuard><Dashboard /></AuthGuard>} />
+            <Route path="/project/:id" element={<AuthGuard><Board /></AuthGuard>} />
           </Routes>
         </Router>
       </Provider>
+      <ToastContainer theme='dark' />
     </div>
   );
 };

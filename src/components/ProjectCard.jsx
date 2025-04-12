@@ -1,32 +1,33 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const getGradientFromId = (id) => {
+const getRandomGradient = () => {
   const colors = [
-    ['from-pink-500', 'to-yellow-500'],
-    ['from-blue-500', 'to-cyan-500'],
-    ['from-green-500', 'to-lime-500'],
-    ['from-purple-500', 'to-fuchsia-500'],
-    ['from-red-500', 'to-orange-500'],
-    ['from-teal-500', 'to-indigo-500'],
+    ['from-pink-700', 'to-yellow-700'],
+    ['from-blue-700', 'to-cyan-700'],
+    ['from-green-700', 'to-lime-700'],
+    ['from-purple-700', 'to-fuchsia-700'],
+    ['from-red-700', 'to-orange-700'],
+    ['from-teal-700', 'to-indigo-700'],
   ];
-  const index = Math.abs([...id].reduce((acc, char) => acc + char.charCodeAt(0), 0)) % colors.length;
-  return colors[index];
+  const randomIndex = Math.floor(Math.random() * colors.length);
+  return colors[randomIndex];
 };
 
 const ProjectCard = ({ project }) => {
   const navigate = useNavigate();
-  const gradient = getGradientFromId(project.id || project.title || 'default');
+  const gradient = getRandomGradient(); // Get a random gradient
 
   return (
     <div
-      className="border rounded-xl p-4 shadow cursor-pointer hover:scale-105 transition bg-white"
+      className="border border-gray-700 rounded-xl p-4 shadow-md cursor-pointer hover:scale-105 transition-transform bg-gray-800 hover:shadow-xl"
       onClick={() => navigate(`/project/${project.id}`)}
+      aria-label={`View project: ${project.title}`}
     >
       {project.coverImage ? (
         <img
           src={project.coverImage}
-          alt="cover"
+          alt={`Cover image for project: ${project.title}`}
           className="w-full h-40 object-cover rounded-md"
         />
       ) : (
@@ -34,8 +35,8 @@ const ProjectCard = ({ project }) => {
           className={`w-full h-40 rounded-md bg-gradient-to-r ${gradient[0]} ${gradient[1]}`}
         />
       )}
-      <h3 className="text-xl font-bold mt-3">{project.title}</h3>
-      <p className="text-sm text-gray-500">{project.description}</p>
+      <h3 className="text-xl font-bold mt-3 text-white">{project.title}</h3>
+      <p className="text-sm text-gray-400">{project.description}</p>
     </div>
   );
 };

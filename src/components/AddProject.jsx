@@ -10,7 +10,7 @@ import { addProjectAction } from '../redux/slice/project.slice';
 const schema = Yup.object().shape({
   title: Yup.string().required('Title is required'),
   description: Yup.string().required('Description is required'),
-  coverImage: Yup.string().url('Must be a valid URL').notRequired(),
+  coverImage: Yup.string().url('Must be a valid URL').optional(),
 });
 
 const AddProject = ({ onClose }) => {
@@ -28,17 +28,17 @@ const AddProject = ({ onClose }) => {
       title: data.title,
       description: data.description,
       coverImage: data.coverImage || '', 
-      columnOrder:[]
+      columnOrder: [],
     };
 
     dispatch(addProjectAction(newProject));
-    onClose(); 
+    onClose();
   };
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-xl p-6 w-full max-w-md shadow-lg">
-        <h2 className="text-2xl font-semibold mb-4">Add New Project</h2>
+      <div className="bg-gray-900 rounded-xl p-6 w-full max-w-md shadow-lg">
+        <h2 className="text-2xl font-semibold text-white mb-4">Add New Project</h2>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <InputField
             label="Title"
@@ -68,7 +68,7 @@ const AddProject = ({ onClose }) => {
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-md bg-gray-200 hover:bg-gray-300 text-sm"
+              className="px-4 py-2 rounded-md bg-gray-700 hover:bg-gray-800 text-sm text-white"
             >
               Cancel
             </button>

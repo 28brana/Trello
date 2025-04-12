@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import CryptoJS from 'crypto-js';
+import { toast } from 'react-toastify';
 
 const initialState = {
   user: null,
@@ -29,8 +30,10 @@ const authSlice = createSlice({
         state.user.password === hashedPassword
       ) {
         state.isLogin = true;
+        window.location.href='/'
+        toast(`Welcome ${email}`)
       } else {
-        alert('Invalid credentials');
+        toast('Invalid credentials');
       }
     },
 

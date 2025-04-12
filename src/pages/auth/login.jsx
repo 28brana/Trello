@@ -1,9 +1,10 @@
+import { yupResolver } from '@hookform/resolvers/yup';
 import React from 'react';
 import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
+import { Link } from 'react-router-dom';
 import * as Yup from 'yup';
-import { Link, useNavigate } from 'react-router-dom';
 
+import { useDispatch } from 'react-redux';
 import InputField from '../../components/InputField';
 import PasswordField from '../../components/PasswordField';
 import { loginAction } from '../../redux/slice/auth.slice';
@@ -15,8 +16,7 @@ const schema = Yup.object().shape({
 });
 
 const Login = () => {
-  const navigate = useNavigate();
-
+  const dispatch = useDispatch();
   const {
     register,
     handleSubmit,
@@ -25,13 +25,12 @@ const Login = () => {
 
   const onSubmit = (data) => {
     dispatch(loginAction(data));
-    // navigate('/dashboard');
   };
 
   return (
-    <div className="flex justify-center items-center h-screen bg-gray-100">
-      <form onSubmit={handleSubmit(onSubmit)} className="bg-white p-6 rounded-lg shadow-lg w-80">
-        <h2 className="text-2xl font-bold mb-4 text-center">Welcome back 👋</h2>
+    <div className="flex justify-center items-center h-screen bg-neutral-900">
+      <form onSubmit={handleSubmit(onSubmit)} className="bg-neutral-800 p-6 rounded-lg shadow-lg w-80 border border-neutral-700">
+        <h2 className="text-2xl font-bold mb-4 text-center text-neutral-100">Welcome back 👋</h2>
 
         <InputField
           label="Email"
@@ -51,14 +50,14 @@ const Login = () => {
 
         <button
           type="submit"
-          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
+          className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition"
         >
           Login
         </button>
 
-        <p className="text-sm text-center mt-3">
+        <p className="text-sm text-center mt-3 text-neutral-400">
           Don’t have an account?{' '}
-          <Link to="/auth/register" className="text-blue-600">
+          <Link to="/auth/register" className="text-blue-500 hover:underline">
             Register
           </Link>
         </p>

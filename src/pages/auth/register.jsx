@@ -13,8 +13,8 @@ const schema = Yup.object().shape({
   username: Yup.string().required('Username is required'),
   email: Yup.string().email('Invalid email').required('Email is required'),
   password: Yup.string()
-  .required('Password is required')
-  .min(6, 'Password must be at least 6 characters'),
+    .required('Password is required')
+    .min(6, 'Password must be at least 6 characters'),
 });
 
 const Register = () => {
@@ -29,13 +29,18 @@ const Register = () => {
 
   const onSubmit = (data) => {
     dispatch(registerAction(data));
-    navigate('/dashboard');
+    navigate('/');
   };
 
   return (
-    <div className="flex justify-center items-center h-screen bg-gray-100">
-      <form onSubmit={handleSubmit(onSubmit)} className="bg-white p-6 rounded-lg shadow-lg w-80">
-        <h2 className="text-2xl font-bold mb-4 text-center">Sign up to continue</h2>
+    <div className="flex justify-center items-center h-screen bg-neutral-900 text-white">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="bg-neutral-800 p-6 rounded-lg shadow-xl w-80 border border-neutral-700"
+      >
+        <h2 className="text-2xl font-bold mb-4 text-center text-neutral-100">
+          Sign up to continue
+        </h2>
 
         <InputField
           label="Username"
@@ -64,13 +69,16 @@ const Register = () => {
         <button
           type="submit"
           data-cy="register-button"
-          className="w-full cursor-pointer bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
+          className="w-full cursor-pointer bg-blue-500 text-white py-2 mt-2 rounded hover:bg-blue-600 transition"
         >
           Register
         </button>
 
-        <p className="text-sm text-center mt-3">
-          Already have an account? <Link to="/auth/login" className="text-blue-600">Login</Link>
+        <p className="text-sm text-center mt-3 text-neutral-400">
+          Already have an account?{' '}
+          <Link to="/auth/login" className="text-blue-500 hover:underline">
+            Login
+          </Link>
         </p>
       </form>
     </div>

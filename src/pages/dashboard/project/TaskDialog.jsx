@@ -4,9 +4,10 @@ export function TaskDialog({ task, onClose, onUpdate }) {
   const [title, setTitle] = useState(task.title);
   const [description, setDescription] = useState(task.description);
   const [assignedTo, setAssignedTo] = useState(task.assignedTo || '');
+  const [dueDate, setDueDate] = useState(task.dueDate ? task.dueDate.slice(0, 10) : '');
 
   const handleSave = () => {
-    onUpdate(task.id, { title, description, assignedTo });
+    onUpdate(task.id, { title, description, assignedTo, dueDate });
     onClose();
   };
 
@@ -34,14 +35,21 @@ export function TaskDialog({ task, onClose, onUpdate }) {
         <select
           value={assignedTo}
           onChange={(e) => setAssignedTo(e.target.value)}
-          className="mb-4 w-full rounded bg-neutral-700 px-3 py-2 text-sm text-white"
+          className="mb-3 w-full rounded bg-neutral-700 px-3 py-2 text-sm text-white"
         >
           <option value="">Unassigned</option>
           <option value="bharat">Bharat</option>
           <option value="john">John</option>
           <option value="emma">Emma</option>
-          {/* Add your real users here */}
         </select>
+
+        <label className="text-sm text-neutral-400">Due Date</label>
+        <input
+          type="date"
+          value={dueDate}
+          onChange={(e) => setDueDate(e.target.value)}
+          className="mb-4 w-full rounded bg-neutral-700 px-3 py-2 text-sm text-white focus:outline-none"
+        />
 
         <div className="flex justify-end gap-3">
           <button
