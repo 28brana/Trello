@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 const initialState = {
   user: null,
   isLogin: false,
+  userList: [], 
 };
 
 const authSlice = createSlice({
@@ -13,27 +14,41 @@ const authSlice = createSlice({
   reducers: {
     registerAction(state, action) {
       const { username, email, password } = action.payload;
-      const hashedPassword = CryptoJS.SHA256(password).toString();
 
-      state.user = { username, email, password: hashedPassword };
+      // Check if email already exists
+      const existingUser = state.userList.find((u) => u.email === email);
+      if (existingUser) {
+        toast.error('Email already exists');
+        return;
+      }
+
+      const hashedPassword = CryptoJS.SHA256(password).toString();
+      const newUser = { username, email, password: hashedPassword };
+
+      state.user = newUser;
       state.isLogin = true;
+      state.userList.push(newUser); // 🆕 Save to userList
+
+      toast.success(`Welcome ${username}`);
+      window.location.href = '/';
     },
 
     loginAction(state, action) {
       const { email, password } = action.payload;
       const hashedPassword = CryptoJS.SHA256(password).toString();
 
-      // Check against persisted user
-      if (
-        state.user &&
-        state.user.email === email &&
-        state.user.password === hashedPassword
-      ) {
+      // Check against all users in the list
+      const matchedUser = state.userList.find(
+        (u) => u.email === email && u.password === hashedPassword
+      );
+
+      if (matchedUser) {
+        state.user = matchedUser;
         state.isLogin = true;
-        window.location.href='/'
-        toast(`Welcome ${email}`)
+        toast.success(`Welcome ${matchedUser.username}`);
+        window.location.href = '/';
       } else {
-        toast('Invalid credentials');
+        toast.error('Invalid credentials');
       }
     },
 

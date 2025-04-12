@@ -26,6 +26,7 @@ const MainLayout = ({ children }) => {
                         <p className="text-xs text-neutral-400">{user?.email}</p>
                     </div>
                     <button
+                        data-cy="logout-button"
                         onClick={handleLogout}
                         className="ml-4 px-4 py-1 rounded bg-red-600 hover:bg-red-700 text-sm focus:outline-none"
                     >

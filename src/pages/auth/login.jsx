@@ -12,7 +12,9 @@ import { loginAction } from '../../redux/slice/auth.slice';
 // Validation schema
 const schema = Yup.object().shape({
   email: Yup.string().email('Invalid email').required('Email is required'),
-  password: Yup.string().min(6, 'Password must be at least 6 characters').required('Password is required'),
+  password: Yup.string()
+    .required('Password is required')
+    .min(6, 'Password must be at least 6 characters'),
 });
 
 const Login = () => {
@@ -50,6 +52,7 @@ const Login = () => {
 
         <button
           type="submit"
+          data-cy="login-button"
           className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition"
         >
           Login

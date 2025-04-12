@@ -29,7 +29,6 @@ const Register = () => {
 
   const onSubmit = (data) => {
     dispatch(registerAction(data));
-    navigate('/');
   };
 
   return (
